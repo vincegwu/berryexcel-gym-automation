@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .header { background-color: #1a1a2e; padding: 30px; text-align: center; }
+    .header h1 { color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 0.5px; }
+    .header p { color: #a0b0c8; margin: 8px 0 0; font-size: 14px; }
+    .body { padding: 30px; color: #333; }
+    .body p { font-size: 15px; line-height: 1.7; }
+    .success-box { background-color: #f0fff4; border-left: 4px solid #27AE60; border-radius: 4px; padding: 16px 20px; margin: 20px 0; }
+    .success-box p { margin: 0; font-size: 14px; color: #1e8449; font-weight: bold; }
+    .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    .details-table td { padding: 10px 14px; font-size: 14px; border: 1px solid #e0e0e0; }
+    .details-table td:first-child { background-color: #f0fff4; font-weight: bold; width: 40%; color: #27AE60; }
+    .btn { display: inline-block; margin-top: 20px; padding: 12px 32px; background-color: #27AE60; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 15px; font-weight: bold; }
+    .footer { background-color: #f4f4f4; text-align: center; padding: 20px; font-size: 12px; color: #999; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>&#x2705; Subscription Renewed!</h1>
+      <p>Your subscription has been successfully updated</p>
+    </div>
+    <div class="body">
+      <p>Hi <strong>{{ $('Calculate Renewal Dates').item.json['Full Name'].split(' ')[0] }}</strong>,</p>
+      <p>Great news! Your subscription has been successfully renewed. Here are your updated subscription details:</p>
+      <div class="success-box">
+        <p>&#x1F389; Your subscription is now Active until {{ $('Calculate Renewal Dates').item.json['End Date'] }}</p>
+      </div>
+      <table class="details-table">
+        <tr>
+          <td>Full Name</td>
+          <td>{{ $('Calculate Renewal Dates').item.json['Full Name'] }}</td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td>{{ $('Calculate Renewal Dates').item.json['Email'] }}</td>
+        </tr>
+        <tr>
+          <td>Subscription Plan</td>
+          <td>{{ $('Calculate Renewal Dates').item.json['Subscription'] }}</td>
+        </tr>
+        <tr>
+          <td>Status</td>
+          <td style="color:#27AE60; font-weight:bold;">&#x2705; Active</td>
+        </tr>
+        <tr>
+          <td>New Start Date</td>
+          <td>{{ $('Calculate Renewal Dates').item.json['Start Date'] }}</td>
+        </tr>
+        <tr>
+          <td>New Expiry Date</td>
+          <td>{{ $('Calculate Renewal Dates').item.json['End Date'] }}</td>
+        </tr>
+      </table>
+      <p>Thank you for renewing your subscription. If you have any questions or need assistance, our support team is always here to help.</p>
+      <center>
+        <a href="mailto:support@yourcompany.com" class="btn">Contact Support</a>
+      </center>
+      <p style="margin-top:24px; font-size:13px; color:#999;">If you did not initiate this renewal, please contact our support team immediately.</p>
+    </div>
+    <div class="footer">
+      <p>&#169; 2026 Your Company. All rights reserved.</p>
+      <p>You are receiving this email because your subscription was recently renewed.</p>
+    </div>
+  </div>
+</body>
+</html>
