@@ -1,0 +1,918 @@
+{
+  "name": "BerryGym Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();\nconst subscription = item.json['Subscription'];\nconst months = parseInt(subscription.split(' ')[0]);\n\nconst startDate = $now.toFormat('dd MMM yyyy');\nconst endDate = $now.plus({ months: months }).toFormat('dd MMM yyyy');\n\nreturn [{\n  json: {\n    ...item.json,\n    'Start Date': startDate,\n    'End Date': endDate,\n    'Status': 'Active'\n  },\n  binary: item.binary  // ← critical line\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1872,
+        -16
+      ],
+      "id": "3683cc85-26a1-4fea-a524-865b8c778410",
+      "name": "Set Subscription Dates"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2112,
+        384
+      ],
+      "id": "fc7c366e-d38e-4e09-9e04-63d17839d9aa",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "44b95253-d08b-462c-ba09-e4ad5907ae00",
+              "name": "fields['First Name']",
+              "value": "={{ $json.fields['Full Name'].split(' ')[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1344,
+        496
+      ],
+      "id": "74cd15ce-fe16-4cac-831d-3213578dcbe9",
+      "name": "Extract First Name"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('List Records').item.json.fields.Email }}",
+        "subject": "⚠️ Your Subscription Expires in 3 Days — Act Now",
+        "message": "=<!DOCTYPE html> <html> <head>   <meta charset=\"UTF-8\" />   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>   <style>     body {       font-family: Arial, sans-serif;       background-color: #f4f4f4;       margin: 0;       padding: 0;     }     .container {       max-width: 600px;       margin: 40px auto;       background-color: #ffffff;       border-radius: 8px;       overflow: hidden;       box-shadow: 0 2px 8px rgba(0,0,0,0.1);     }     .header {       background-color: #E74C3C;       padding: 30px;       text-align: center;     }     .header h1 {       color: #ffffff;       margin: 0;       font-size: 22px;     }     .header p {       color: #fde8e8;       margin: 8px 0 0;       font-size: 14px;     }     .body {       padding: 30px;       color: #333333;     }     .body p {       font-size: 15px;       line-height: 1.7;     }     .alert-box {       background-color: #fff5f5;       border-left: 4px solid #E74C3C;       border-radius: 4px;       padding: 16px 20px;       margin: 20px 0;     }     .alert-box p {       margin: 0;       font-size: 15px;       color: #c0392b;       font-weight: bold;     }     .details-table {       width: 100%;       border-collapse: collapse;       margin: 20px 0;     }     .details-table td {       padding: 10px 14px;       font-size: 14px;       border: 1px solid #e0e0e0;     }     .details-table td:first-child {       background-color: #fff5f5;       font-weight: bold;       width: 40%;       color: #E74C3C;     }     .btn {       display: inline-block;       margin-top: 20px;       padding: 12px 32px;       background-color: #E74C3C;       color: #ffffff;       text-decoration: none;       border-radius: 5px;       font-size: 15px;       font-weight: bold;     }     .footer {       background-color: #f4f4f4;       text-align: center;       padding: 20px;       font-size: 12px;       color: #999999;     }   </style> </head> <body>   <div class=\"container\">      <!-- Header -->     <div class=\"header\">       <h1>⚠️ Subscription Expiry Notice</h1>       <p>Action required — your subscription ends soon</p>     </div>      <!-- Body -->     <div class=\"body\">       <p>Hi <strong>{{ $json.fields['First Name'] }}</strong>,</p>       <p>We noticed your subscription is expiring in <strong>3 days</strong>. Renew now to avoid any interruption to your service.</p>        <!-- Alert Box -->       <div class=\"alert-box\">         <p>🚨 Your subscription expires on {{ $json.fields['End Date'] }}</p>       </div>        <!-- Details Table -->       <table class=\"details-table\">         <tr>           <td>Full Name</td>           <td>{{ $json.fields['Full Name'] }}</td>         </tr>         <tr>           <td>Email</td>           <td>{{ $json.fields.Email }}</td>         </tr>         <tr>           <td>Subscription Plan</td>           <td>{{ $json.fields.Subscription }}</td>         </tr>         <tr>           <td>Start Date</td>           <td>{{ $json.fields['Start Date'] }}</td>         </tr>         <tr>           <td>Expiry Date</td>           <td>{{ $json.fields['End Date'] }}</td>         </tr>       </table>        <p>To continue enjoying uninterrupted access, please renew your subscription before the expiry date.</p>        <center>         <a href=\"https://berryexcel.app.n8n.cloud/form/0e4de73b-fce3-49ed-9349-c656d32cd917\" class=\"btn\">Renew Subscription</a>       </center>        <p style=\"margin-top:24px; font-size:13px; color:#999;\">If you have already renewed or believe this is an error, please contact our support team and we will resolve it promptly.</p>     </div>      <!-- Footer -->     <div class=\"footer\">       <p>© 2026 BerryExcel. All rights reserved.</p>       <p>You are receiving this email because your subscription is approaching its expiry date.</p>     </div>    </div> </body> </html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        448
+      ],
+      "id": "ea466030-5080-4113-af00-d514caf4fa58",
+      "name": "Gmail Subscription Alert Confirmation",
+      "webhookId": "f5e89ddd-e951-4300-b37c-62d467813c9f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPkDqywp4fdEOhzb",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5071037543",
+        "text": "=🔔 *Subscription Expiry Alert*  \n\nA user's subscription is expiring in 3 days. \nDetails below:  \n👤 *Name:* {{ $json.fields['Full Name'] }}\n📧 *Email:* {{ $json.fields.Email }} \n📋 *Plan:* {{ $json.fields['Subscription'] }} \n📅 *Start Date:* {{ $json.fields['Start Date'] }} \n⏳ *Expiry Date:* {{ $json.fields['End Date'] }}  \n\nPlease follow up with the user immediately.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1040,
+        624
+      ],
+      "id": "cca46920-1012-40bd-b966-47c68050eee2",
+      "name": "Telegram Owner Notification",
+      "webhookId": "c88374d2-01bf-4390-9fce-b1aa626b3cd7",
+      "credentials": {
+        "telegramApi": {
+          "id": "Bp9YN57twcBGG6Pr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "BerryGym Registration",
+        "formDescription": "This form is for the registration of visitors to the Gym",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Profile Picture",
+              "fieldType": "file",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone Number",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Subscription",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1 Month"
+                  },
+                  {
+                    "option": "2 Months"
+                  },
+                  {
+                    "option": "3 Months"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -2048,
+        -16
+      ],
+      "id": "4f5fbf32-f01a-4d92-b4a9-c081ba7d1b79",
+      "name": "Onboarding Form",
+      "webhookId": "d98ab167-5642-477d-9994-c73e07672f49"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.imgbb.com/1/upload",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "=3904ad4d74151895d64b8dae44d84f15"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "image",
+              "inputDataFieldName": "=Profile_Picture"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1680,
+        -16
+      ],
+      "id": "ff697b7e-dc27-4476-94f4-2133a5999b25",
+      "name": "Upload Profile Image"
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appbPJyAwuw9nc6ql",
+          "mode": "list",
+          "cachedResultName": "BerryExcel Gym",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblObw8NRquh4gHnq",
+          "mode": "list",
+          "cachedResultName": "BE Gym Table",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql/tblObw8NRquh4gHnq"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Full Name": "={{ $('Onboarding Form').item.json['Full Name'] }}",
+            "Profile-Picture": "={{ [{ url: $('Upload Profile Image').item.json.data.url }] }}",
+            "Email": "={{ $('Onboarding Form').item.json.Email }}",
+            "Phone Number": "=+234{{ $('Onboarding Form').item.json['Phone Number'] }}",
+            "Subscription": "={{ $('Onboarding Form').item.json.Subscription }}",
+            "Start Date": "={{ $('Set Subscription Dates').item.json['Start Date'] }}",
+            "End Date": "={{ $('Set Subscription Dates').item.json['End Date'] }}",
+            "Status": "={{ $('Set Subscription Dates').item.json.Status }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Profile-Picture",
+              "displayName": "Profile-Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Subscription",
+              "displayName": "Subscription",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Start Date",
+              "displayName": "Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "End Date",
+              "displayName": "End Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Expired",
+                  "value": "Expired"
+                },
+                {
+                  "name": "Pending",
+                  "value": "Pending"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -1488,
+        -16
+      ],
+      "id": "917fe7a7-fde0-4619-b954-e4ccb54c09f5",
+      "name": "Create Airtable Record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5oOrVXMhYVRYGsHg",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0da295c3-e5b4-4d20-9dd8-2328ba257807",
+              "name": "fields['Full Name']",
+              "value": "={{ $json.fields['Full Name'].split(' ')[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1312,
+        -16
+      ],
+      "id": "32227068-7849-4c44-ae8c-7e4fed8e4eed",
+      "name": "Edit Airtable Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Onboarding Form').item.json.Email }}",
+        "subject": "Welcome to BerryExcel Gym",
+        "message": "=<!DOCTYPE html> <html> <head>   <meta charset=\"UTF-8\" />   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>   <style>     body {       font-family: Arial, sans-serif;       background-color: #f4f4f4;       margin: 0;       padding: 0;     }     .container {       max-width: 600px;       margin: 40px auto;       background-color: #ffffff;       border-radius: 8px;       overflow: hidden;       box-shadow: 0 2px 8px rgba(0,0,0,0.1);     }     .header {       background-color: #4A90D9;       padding: 30px;       text-align: center;     }     .header img {       width: 80px;       height: 80px;       border-radius: 50%;       border: 3px solid #ffffff;       object-fit: cover;     }     .header h1 {       color: #ffffff;       margin: 15px 0 0;       font-size: 22px;     }     .body {       padding: 30px;       color: #333333;     }     .body p {       font-size: 15px;       line-height: 1.7;     }     .details-table {       width: 100%;       border-collapse: collapse;       margin: 20px 0;     }     .details-table td {       padding: 10px 14px;       font-size: 14px;       border: 1px solid #e0e0e0;     }     .details-table td:first-child {       background-color: #f0f4ff;       font-weight: bold;       width: 40%;       color: #4A90D9;     }     .footer {       background-color: #f4f4f4;       text-align: center;       padding: 20px;       font-size: 12px;       color: #999999;     }     .btn {       display: inline-block;       margin-top: 20px;       padding: 12px 28px;       background-color: #4A90D9;       color: #ffffff;       text-decoration: none;       border-radius: 5px;       font-size: 15px;     }   </style> </head> <body>   <div class=\"container\">      <!-- Header -->     <div class=\"header\">       <img src=\"{{ $('Upload Profile Image').item.json.data.image.url }}\" alt=\"Profile Picture\" />       <h1>Welcome, {{ $('Edit Airtable Fields').item.json.fields['Full Name'] }}!</h1>     </div>      <!-- Body -->     <div class=\"body\">       <p>Hi <strong>{{ $('Onboarding Form').item.json['Full Name'] }}</strong>,</p>       <p>         Thank you for joining us! Your account has been successfully created.          Below are your onboarding details:       </p>        <!-- Details Table -->       <table class=\"details-table\">\n  <tr>\n    <td>Full Name</td>\n    <td>{{ $('Onboarding Form').item.json['Full Name'] }}</td>\n  </tr>\n  <tr>\n    <td>Email</td>\n    <td>{{ $('Onboarding Form').item.json['Email'] }}</td>\n  </tr>\n  <tr>\n    <td>Subscription Plan</td>\n    <td>{{ $('Onboarding Form').item.json['Subscription'] }}</td>\n  </tr>\n  <tr>\n    <td>Subscription Status</td>\n    <td style=\"color: #27AE60; font-weight: bold;\">&#x2705; {{ $('Set Subscription Dates').item.json['Status'] ?? 'Active' }}</td>\n  </tr>\n  <tr>\n    <td>Start Date</td>\n    <td>{{ $('Set Subscription Dates').item.json['Start Date'] }}</td>\n  </tr>\n  <tr>\n    <td>End Date</td>\n    <td>{{ $('Set Subscription Dates').item.json['End Date'] }}</td>\n  </tr>\n</table>        <p>         If you have any questions, feel free to reach out to our support team          at any time. We're happy to help!       </p>        <center>         <a href=\"mailto:admin@berryexcel.online\" class=\"btn\">           Contact Support         </a>       </center>     </div>      <!-- Footer -->     <div class=\"footer\">       <p>© 2026 BerryExcel Gym. All rights reserved.</p>       <p>You're receiving this email because you registered with us.</p>     </div>    </div> </body> </html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -912,
+        -16
+      ],
+      "id": "0815aa43-359b-402a-b88a-e04178058b32",
+      "name": "Gmail User Onboarding Notification",
+      "webhookId": "c85b95b0-ef99-4789-87bd-669520df5112",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPkDqywp4fdEOhzb",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1136,
+        -16
+      ],
+      "id": "08939008-12dc-4b9e-a592-a05aa529bc31",
+      "name": "Wait",
+      "webhookId": "c6be083c-1b5b-4f78-91ae-7655b1fd89fd",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appbPJyAwuw9nc6ql",
+          "mode": "list",
+          "cachedResultName": "BerryExcel Gym",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblObw8NRquh4gHnq",
+          "mode": "list",
+          "cachedResultName": "BE Gym Table",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql/tblObw8NRquh4gHnq"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -1888,
+        384
+      ],
+      "id": "202fed52-7c3c-41c2-9a51-e965ad736036",
+      "name": "List Records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5oOrVXMhYVRYGsHg",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fd7f4733-8550-4915-a86a-b8d749aaaec6",
+              "leftValue": "={{ $json.fields['End Date'] }}",
+              "rightValue": "={{ $now.plus({ days: 3 }).toISODate() }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "5ea24115-8636-4cb9-9539-ce68deaaa6af",
+              "leftValue": "={{ $json.fields.Status }}",
+              "rightValue": "Active",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1616,
+        512
+      ],
+      "id": "88559db9-4959-466e-bb98-eac228fd804b",
+      "name": "Check Expiring Subscription"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "447b186c-db1e-4729-9f11-81cbc31fd765",
+              "leftValue": "={{ $json.fields['End Date'] }}",
+              "rightValue": "={{ $now.toISODate() }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "before"
+              }
+            },
+            {
+              "id": "6928b1b7-9637-4b4e-b071-a07d100ed6a4",
+              "leftValue": "={{ $json.fields.Status }}",
+              "rightValue": "=Active",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1600,
+        240
+      ],
+      "id": "f2e9081c-f4d2-434e-a035-368f97d40373",
+      "name": "Check Expired Subscription"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appbPJyAwuw9nc6ql",
+          "mode": "list",
+          "cachedResultName": "BerryExcel Gym",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblObw8NRquh4gHnq",
+          "mode": "list",
+          "cachedResultName": "BE Gym Table",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql/tblObw8NRquh4gHnq"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('List Records').item.json.id }}",
+            "Status": "Expired"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Profile-Picture",
+              "displayName": "Profile-Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Subscription",
+              "displayName": "Subscription",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Start Date",
+              "displayName": "Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "End Date",
+              "displayName": "End Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Expired",
+                  "value": "Expired"
+                },
+                {
+                  "name": "Pending",
+                  "value": "Pending"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -1216,
+        224
+      ],
+      "id": "85bdf7d5-70a5-47c4-8d48-805de7a21487",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5oOrVXMhYVRYGsHg",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5071037543",
+        "text": "=🔴 *Subscription Expired*  \nA user's subscription has expired and their status has been updated.  \n👤 *Name:* {{ $('List Records').item.json.fields['Full Name'] }} \n📧 *Email:*  {{ $('List Records').item.json.fields.Email }}\n📋 *Plan:* {{ $('List Records').item.json.fields.Subscription }} \n📅 *Start Date:* {{ $('List Records').item.json.fields['Start Date'] }} \n⏳ *Expired On:* {{ $('List Records').item.json.fields['End Date'] }} \n🔴 *Status:* Expired  Please follow up with the user for renewal.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -816,
+        160
+      ],
+      "id": "499824c4-c59c-4509-99c2-35b4bc068d22",
+      "name": "Telegram Owner Notification1",
+      "webhookId": "29bb3228-9a5a-4980-a16d-f745d0a8aa9c",
+      "credentials": {
+        "telegramApi": {
+          "id": "Bp9YN57twcBGG6Pr",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('List Records').item.json.fields.Email }}",
+        "subject": "❌ Your Subscription Has Expired",
+        "message": "=<!DOCTYPE html> <html> <head>   <meta charset=\"UTF-8\"/>   <style>     body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }     .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }     .header { background-color: #1a1a2e; padding: 30px; text-align: center; }     .header h1 { color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 0.5px; }     .header p { color: #a0b0c8; margin: 8px 0 0; font-size: 14px; }     .body { padding: 30px; color: #333; }     .body p { font-size: 15px; line-height: 1.7; }     .expired-box { background-color: #fff5f5; border-left: 4px solid #E74C3C; border-radius: 4px; padding: 16px 20px; margin: 20px 0; }     .expired-box p { margin: 0; font-size: 14px; color: #c0392b; font-weight: bold; }     .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }     .details-table td { padding: 10px 14px; font-size: 14px; border: 1px solid #e0e0e0; }     .details-table td:first-child { background-color: #fff5f5; font-weight: bold; width: 40%; color: #E74C3C; }     .btn { display: inline-block; margin-top: 20px; padding: 12px 32px; background-color: #E74C3C; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 15px; font-weight: bold; }     .footer { background-color: #f4f4f4; text-align: center; padding: 20px; font-size: 12px; color: #999; }   </style> </head> <body>   <div class=\"container\">     <div class=\"header\">       <h1>&#x274C; Subscription Expired</h1>       <p>Your subscription has come to an end</p>     </div>     <div class=\"body\">       <p>Hi <strong>{{ $('List Records').item.json.fields['Full Name'] }}</strong>,</p>       <p>Your subscription has expired. Renew now to continue enjoying uninterrupted access to our services.</p>       <div class=\"expired-box\">         <p>&#x1F534; Your subscription expired on {{ $('List Records').item.json.fields['End Date'] }}</p>       </div>       <table class=\"details-table\">         <tr>           <td>Full Name</td>           <td>{{ $('List Records').item.json.fields['Full Name'] }}</td>         </tr>         <tr>           <td>Email</td>           <td>{{ $('List Records').item.json.fields.Email }}</td>         </tr>         <tr>           <td>Subscription Plan</td>           <td>{{ $('List Records').item.json.fields.Subscription }}</td>         </tr>         <tr>           <td>Status</td>           <td style=\"color:#E74C3C; font-weight:bold;\">&#x274C; Expired</td>         </tr>         <tr>           <td>Expired On</td>           <td>{{ $('List Records').item.json.fields['End Date'] }}</td>         </tr>       </table>       <p>Click the button below to renew your subscription and reactivate your account immediately.</p>       <center>         <a href=\"https://berryexcel.app.n8n.cloud/form/0e4de73b-fce3-49ed-9349-c656d32cd917\" class=\"btn\">Renew Subscription</a>       </center>       <p style=\"margin-top:24px; font-size:13px; color:#999;\">If you have already renewed, please disregard this email.</p>     </div>     <div class=\"footer\">       <p>&#169; 2026 BerryExcel. All rights reserved.</p>       <p>You are receiving this email because your subscription has expired.</p>     </div>   </div> </body> </html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -816,
+        352
+      ],
+      "id": "7953957d-eab6-460a-bf12-240ebedba62b",
+      "name": "Gmail Subscription Expiry Confirmation",
+      "webhookId": "38a4f22e-481c-4f6d-b59f-1e05b952302c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPkDqywp4fdEOhzb",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set Subscription Dates": {
+      "main": [
+        [
+          {
+            "node": "Upload Profile Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "List Records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract First Name": {
+      "main": [
+        [
+          {
+            "node": "Gmail Subscription Alert Confirmation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Owner Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Onboarding Form": {
+      "main": [
+        [
+          {
+            "node": "Set Subscription Dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Profile Image": {
+      "main": [
+        [
+          {
+            "node": "Create Airtable Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Airtable Record": {
+      "main": [
+        [
+          {
+            "node": "Edit Airtable Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Airtable Fields": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Gmail User Onboarding Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Records": {
+      "main": [
+        [
+          {
+            "node": "Check Expiring Subscription",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check Expired Subscription",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Expiring Subscription": {
+      "main": [
+        [
+          {
+            "node": "Extract First Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Expired Subscription": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Telegram Owner Notification1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Gmail Subscription Expiry Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false,
+    "errorWorkflow": "9vfJH64Kz3Ftqz5F",
+    "executionTimeout": 5
+  },
+  "versionId": "bad6d782-0f65-442a-bc20-7b3f024bc40a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "880afc7a592a160187297e0f30aed2d2b76e15f912e57b96eb5ec99b8783c1b2"
+  },
+  "id": "Oxxr21nbbswwDzMD",
+  "tags": []
+}

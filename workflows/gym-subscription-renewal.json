@@ -1,0 +1,401 @@
+{
+  "name": "Gym Subscription Renewal",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Subscription Renewal Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name"
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email"
+            },
+            {
+              "fieldLabel": "Subscription",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "1 Month"
+                  },
+                  {
+                    "option": "2 Months"
+                  },
+                  {
+                    "option": "3 Months"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -640,
+        -64
+      ],
+      "id": "c82e0205-c90c-4a17-88f9-f66b207a4b44",
+      "name": "Renewal Form",
+      "webhookId": "0e4de73b-fce3-49ed-9349-c656d32cd917"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst subscription = item['Subscription'];\nconst months = parseInt(subscription.split(' ')[0]);\n\nconst startDate = $now.toFormat('dd MMM yyyy');\nconst endDate = $now.plus({ months: months }).toFormat('dd MMM yyyy');\n\nreturn [{\n  json: {\n    ...item,\n    'Start Date': startDate,\n    'End Date': endDate,\n    'Status': 'Active'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -432,
+        -64
+      ],
+      "id": "a25eb605-8267-4b06-b08f-d992fa3242bf",
+      "name": "Calculate Renewal Dates"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "appbPJyAwuw9nc6ql",
+          "mode": "list",
+          "cachedResultName": "BerryExcel Gym",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblObw8NRquh4gHnq",
+          "mode": "list",
+          "cachedResultName": "BE Gym Table",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql/tblObw8NRquh4gHnq"
+        },
+        "filterByFormula": "={Email} = '{{ $json['Email'] }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -224,
+        -64
+      ],
+      "id": "d8d04f22-bbb7-48e5-952e-95a00b0ad977",
+      "name": "Find User Record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5oOrVXMhYVRYGsHg",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "appbPJyAwuw9nc6ql",
+          "mode": "list",
+          "cachedResultName": "BerryExcel Gym",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblObw8NRquh4gHnq",
+          "mode": "list",
+          "cachedResultName": "BE Gym Table",
+          "cachedResultUrl": "https://airtable.com/appbPJyAwuw9nc6ql/tblObw8NRquh4gHnq"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Find User Record').item.json.id }}",
+            "Start Date": "={{ $('Calculate Renewal Dates').item.json['Start Date'] }}",
+            "End Date": "={{ $('Calculate Renewal Dates').item.json['End Date'] }}",
+            "Subscription": "={{ $('Calculate Renewal Dates').item.json['Subscription'] }}",
+            "Status": "Active"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Profile-Picture",
+              "displayName": "Profile-Picture",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Phone Number",
+              "displayName": "Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Subscription",
+              "displayName": "Subscription",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Start Date",
+              "displayName": "Start Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "End Date",
+              "displayName": "End Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Active",
+                  "value": "Active"
+                },
+                {
+                  "name": "Expired",
+                  "value": "Expired"
+                },
+                {
+                  "name": "Pending",
+                  "value": "Pending"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        -16,
+        -64
+      ],
+      "id": "71228c9e-7a32-42c0-a99f-8826d711ec14",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "5oOrVXMhYVRYGsHg",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        -64
+      ],
+      "id": "b2af467f-3a49-4e10-895c-d0f1d5115c1c",
+      "name": "Wait",
+      "webhookId": "123a08e6-077c-4dbe-9bbd-30ca6a99c3c3"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Calculate Renewal Dates').item.json['Email'] }}",
+        "subject": "✅ Subscription Renewed Successfully",
+        "message": "=<!DOCTYPE html> <html> <head>   <meta charset=\"UTF-8\"/>   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>   <style>     body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }     .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }     .header { background-color: #1a1a2e; padding: 30px; text-align: center; }     .header h1 { color: #ffffff; margin: 0; font-size: 22px; letter-spacing: 0.5px; }     .header p { color: #a0b0c8; margin: 8px 0 0; font-size: 14px; }     .body { padding: 30px; color: #333; }     .body p { font-size: 15px; line-height: 1.7; }     .success-box { background-color: #f0fff4; border-left: 4px solid #27AE60; border-radius: 4px; padding: 16px 20px; margin: 20px 0; }     .success-box p { margin: 0; font-size: 14px; color: #1e8449; font-weight: bold; }     .details-table { width: 100%; border-collapse: collapse; margin: 20px 0; }     .details-table td { padding: 10px 14px; font-size: 14px; border: 1px solid #e0e0e0; }     .details-table td:first-child { background-color: #f0fff4; font-weight: bold; width: 40%; color: #27AE60; }     .btn { display: inline-block; margin-top: 20px; padding: 12px 32px; background-color: #27AE60; color: #ffffff; text-decoration: none; border-radius: 5px; font-size: 15px; font-weight: bold; }     .footer { background-color: #f4f4f4; text-align: center; padding: 20px; font-size: 12px; color: #999; }   </style> </head> <body>   <div class=\"container\">      <!-- Header -->     <div class=\"header\">       <h1>✅ Subscription Renewed!</h1>       <p>Your subscription has been successfully updated</p>     </div>      <!-- Body -->     <div class=\"body\">       <p>Hi <strong>{{ $('Calculate Renewal Dates').item.json['Full Name'].split(' ')[0] }}</strong>,</p>       <p>Great news! Your subscription has been successfully renewed. Here are your updated subscription details:</p>        <!-- Success Box -->       <div class=\"success-box\">         <p>🎉 Your subscription is now Active until {{ $('Calculate Renewal Dates').item.json['End Date'] }}</p>       </div>        <!-- Details Table -->       <table class=\"details-table\">         <tr>           <td>Full Name</td>           <td>{{ $('Calculate Renewal Dates').item.json['Full Name'] }}</td>         </tr>         <tr>           <td>Email</td>           <td>{{ $('Calculate Renewal Dates').item.json['Email'] }}</td>         </tr>         <tr>           <td>Subscription Plan</td>           <td>{{ $('Calculate Renewal Dates').item.json['Subscription'] }}</td>         </tr>         <tr>           <td>Status</td>           <td>✅ Active</td>         </tr>         <tr>           <td>New Start Date</td>           <td>{{ $('Calculate Renewal Dates').item.json['Start Date'] }}</td>         </tr>         <tr>           <td>New Expiry Date</td>           <td>{{ $('Calculate Renewal Dates').item.json['End Date'] }}</td>         </tr>       </table>        <p>Thank you for renewing your subscription. If you have any questions or need assistance, our support team is always here to help.</p>        <center>         <a href=\"mailto:admin@berryexcel.online\" class=\"btn\">Contact Support</a>       </center>        <p style=\"margin-top:24px; font-size:13px; color:#999;\">If you did not initiate this renewal, please contact our support team immediately.</p>     </div>      <!-- Footer -->     <div class=\"footer\">       <p>© 2026 BerryExcel. All rights reserved.</p>       <p>You are receiving this email because your subscription was recently renewed.</p>     </div>    </div> </body> </html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        -144
+      ],
+      "id": "d443a5eb-08e9-4940-95d3-56dabb837a31",
+      "name": "Gmail Renewal Confirmation",
+      "webhookId": "df476744-2e65-495d-9d4d-6cf89c316771",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPkDqywp4fdEOhzb",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5071037543",
+        "text": "=✅ *Subscription Renewal Alert*  \n\nA user has successfully renewed a subscription.  \n\n👤 *Name:* {{ $('Calculate Renewal Dates').item.json['Full Name'] }} \n📧 *Email:* {{ $('Calculate Renewal Dates').item.json['Email'] }} \n📋 *Plan:* {{ $('Calculate Renewal Dates').item.json['Subscription'] }} \n📅 *New Start Date:* {{ $('Calculate Renewal Dates').item.json['Start Date'] }} \n⏳ *New Expiry Date:* {{ $('Calculate Renewal Dates').item.json['End Date'] }} \n🟢 *Status:* Active",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        32
+      ],
+      "id": "0845f03d-cf6f-45d9-b512-dbfdf1c9e28c",
+      "name": "Telegram Owner Notification",
+      "webhookId": "7db80b3d-dfbf-4b70-8fc5-3eeed1a02246",
+      "credentials": {
+        "telegramApi": {
+          "id": "Bp9YN57twcBGG6Pr",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Renewal Form": {
+      "main": [
+        [
+          {
+            "node": "Calculate Renewal Dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Renewal Dates": {
+      "main": [
+        [
+          {
+            "node": "Find User Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find User Record": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Gmail Renewal Confirmation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Owner Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "9vfJH64Kz3Ftqz5F",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "0db603f9-c99d-4dfb-a737-db20c928823f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "880afc7a592a160187297e0f30aed2d2b76e15f912e57b96eb5ec99b8783c1b2"
+  },
+  "id": "G9ThVftFPf4vUejA",
+  "tags": []
+}

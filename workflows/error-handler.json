@@ -1,0 +1,158 @@
+{
+  "name": "Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2552723f-1f17-49a0-b479-89baf0b5ca5e",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "062b57b4-5e5e-4d3a-89a3-e6f59699f2c4",
+              "name": "Error Message",
+              "value": "={{ $json.execution.error.message }}",
+              "type": "string"
+            },
+            {
+              "id": "d23443e8-ef0e-4479-86f4-844ca23b7a70",
+              "name": "Workflow Name",
+              "value": "={{ $json.workflow.name }}",
+              "type": "string"
+            },
+            {
+              "id": "35fcdb12-1a2b-4866-8803-03e68a199fda",
+              "name": "Execution ID",
+              "value": "={{ $json.execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "a97bdfc4-1ae0-48b8-9581-5b434a2a2a14",
+              "name": "Error Time",
+              "value": "={{ $now.toFormat('dd MMM yyyy HH:mm:ss') }}",
+              "type": "string"
+            },
+            {
+              "id": "5b1fb4d3-cfce-4cb2-b973-295542c4540f",
+              "name": "Node Failed",
+              "value": "={{ $json.execution.lastNodeExecuted }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6f93f94c-177c-465e-ada4-42a71e4abf60",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "sendTo": "admin@berryexcel.online",
+        "subject": "🚨 Workflow Error Detected — Immediate Attention Required",
+        "message": "=  <!DOCTYPE html> <html> <head>   <meta charset=\"UTF-8\" />   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>   <style>     body {       font-family: Arial, sans-serif;       background-color: #f4f4f4;       margin: 0;       padding: 0;     }     .container {       max-width: 600px;       margin: 40px auto;       background-color: #ffffff;       border-radius: 8px;       overflow: hidden;       box-shadow: 0 2px 8px rgba(0,0,0,0.1);     }     .header {       background-color: #1a1a2e;       padding: 30px;       text-align: center;     }     .header h1 {       color: #ffffff;       margin: 0;       font-size: 22px;       letter-spacing: 0.5px;     }     .header p {       color: #a0b0c8;       margin: 8px 0 0;       font-size: 14px;     }     .body {       padding: 30px;       color: #333333;     }     .body p {       font-size: 15px;       line-height: 1.7;     }     .error-box {       background-color: #fff5f5;       border-left: 4px solid #E74C3C;       border-radius: 4px;       padding: 16px 20px;       margin: 20px 0;     }     .error-box p {       margin: 0;       font-size: 14px;       color: #c0392b;       font-weight: bold;       word-break: break-word;     }     .details-table {       width: 100%;       border-collapse: collapse;       margin: 20px 0;     }     .details-table td {       padding: 10px 14px;       font-size: 14px;       border: 1px solid #e0e0e0;     }     .details-table td:first-child {       background-color: #fff5f5;       font-weight: bold;       width: 40%;       color: #E74C3C;     }     .btn {       display: inline-block;       margin-top: 20px;       padding: 12px 32px;       background-color: #1a1a2e;       color: #ffffff;       text-decoration: none;       border-radius: 5px;       font-size: 15px;       font-weight: bold;     }     .footer {       background-color: #f4f4f4;       text-align: center;       padding: 20px;       font-size: 12px;       color: #999999;     }   </style> </head> <body>   <div class=\"container\">      <!-- Header -->     <div class=\"header\">       <h1>🚨 Workflow Error Detected</h1>       <p>Immediate attention required</p>     </div>      <!-- Body -->     <div class=\"body\">       <p>Hi <strong>BerryExcel</strong>,</p>       <p>An error has been detected in one of your active workflows. Please review and resolve it as soon as possible to avoid disruption to your users.</p>        <!-- Error Message Box -->       <div class=\"error-box\">         <p>❌ {{ $json['Error Message'] }}</p>       </div>        <!-- Error Details Table -->       <table class=\"details-table\">         <tr>           <td>Workflow Name</td>           <td>{{ $json['Workflow Name'] }}</td>         </tr>         <tr>           <td>Failed Node</td>           <td>{{ $json['Node Failed'] }}</td>         </tr>         <tr>           <td>Execution ID</td>           <td>{{ $json['Execution ID'] }}</td>         </tr>         <tr>           <td>Error Time</td>           <td>{{ $json['Error Time'] }}</td>         </tr>       </table>        <p>Please log into your n8n dashboard immediately to review the full execution log, identify the root cause, and restore normal operation.</p>        <center>         <a href=\"https://your-n8n-instance.com\" class=\"btn\">Open n8n Dashboard</a>       </center>        <p style=\"margin-top:24px; font-size:13px; color:#999;\">This is an automated error alert. If the issue persists after fixing, check your API credentials, node configurations, and data flow between nodes.</p>     </div>      <!-- Footer -->     <div class=\"footer\">       <p>© 2026 BerryExcel. All rights reserved.</p>       <p>This is an automated error notification from your n8n instance.</p>     </div>    </div> </body> </html>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        128
+      ],
+      "id": "08d54709-07ca-4c20-ba02-599df0b43d00",
+      "name": "Send an email to Owner",
+      "webhookId": "28f72b3b-3cf0-4005-b45d-aebb7f1210bc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "HPkDqywp4fdEOhzb",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "5071037543",
+        "text": "=🚨 *Workflow Error Alert*  A workflow has failed and requires immediate attention.  \n\n⚙️ *Workflow:* {{ $json['Workflow Name'] }}\n❌ *Error:* {{ $json['Error Message'] }} 🔴 *Failed Node:* {{ $json['Node Failed'] }} 🆔 *Execution ID:* {{ $json['Execution ID'] }} \n🕐 *Time:* {{ $json['Error Time'] }}  \n\nPlease log into your n8n dashboard to investigate.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        -64
+      ],
+      "id": "3c957e76-59ff-462e-9506-172e4c9cbd8c",
+      "name": "Send a Telegram message to Owner",
+      "webhookId": "719618af-664f-46f7-b72d-d0f6ab3d5044",
+      "credentials": {
+        "telegramApi": {
+          "id": "Bp9YN57twcBGG6Pr",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a Telegram message to Owner",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send an email to Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "9vfJH64Kz3Ftqz5F",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "2578c635-ab2c-4bb0-8614-63b535b94984",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "880afc7a592a160187297e0f30aed2d2b76e15f912e57b96eb5ec99b8783c1b2"
+  },
+  "id": "9vfJH64Kz3Ftqz5F",
+  "tags": []
+}
