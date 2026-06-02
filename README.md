@@ -174,6 +174,26 @@ This project automates the **entire subscription lifecycle** for BerryExcel Gym 
 
 ---
 
+## 📸 Screenshots
+
+### Workflow 1 — Onboarding + Subscription Alert
+![Workflow 1](assets/screenshots/workflow-1-canvas.png)
+
+### Workflow 2 — Subscription Renewal Update
+![Workflow 2](assets/screenshots/workflow-2-canvas.png)
+
+### Workflow 3 — Error Handler
+![Workflow 3](assets/screenshots/workflow-3-canvas.png)
+
+### Airtable Records
+![Airtable](assets/screenshots/airtable-records.png)
+
+### Email Notifications
+![Welcome Email](assets/screenshots/welcome-email.png)
+![Expiry Alert](assets/screenshots/expiry-alert-email.png)
+
+---
+
 ## 🛠 Tech Stack
 
 | Tool | Purpose |
